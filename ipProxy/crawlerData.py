@@ -1,6 +1,5 @@
 
 import pymysql
-import time
 
 
 class mySql(object):
@@ -16,14 +15,15 @@ class mySql(object):
         )
         self.cur = self.conn.cursor()
 
-    def insertData(self, ipMes):
+    def clearTable(self, table):
+        order = 'TRUNCATE %s' % table
+        self.cur.execute(order)
+        self.conn.commit()
+        self.closeMysql()
+
+    def insertData(self, ipMes):  # 批量插数据
         order = 'INSERT INTO webIp (ip,port,type,area,timeout) VALUES (%s,%s,%s,%s,%s);'
-        print(time.ctime())
-        start = time.time()
         self.cur.executemany(order, ipMes)
-        print(time.ctime())
-        end = time.time()
-        print(start - end)
         self.conn.commit()
         self.closeMysql()
 

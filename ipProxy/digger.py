@@ -43,8 +43,9 @@ def diggerIp():
 
 
 def main():
-    ipList = diggerIp()
     db = mySql()
+    db.clearTable('webIp')
+    ipList = diggerIp()
     db.insertData(ipList)
 
 if __name__ == '__main__':
