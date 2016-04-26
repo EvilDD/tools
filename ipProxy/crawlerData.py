@@ -26,6 +26,14 @@ class mySql(object):
         self.conn.commit()
         self.closeMysql()
 
+    def selectData(self):
+        order = 'SELECT * FROM webIp LIMIT 10'
+        self.cur.execute(order)
+        ips = self.cur.fetchall()
+        for ip in ips:
+            print(ip)
+        self.closeMysql()
+
     def closeMysql(self):
         self.cur.close()
         self.conn.close()
@@ -33,4 +41,4 @@ class mySql(object):
 
 if __name__ == "__main__":
     mysql = mySql()
-    # mysql.test()
+    mysql.selectData()
