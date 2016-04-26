@@ -15,11 +15,10 @@ class mySql(object):
         )
         self.cur = self.conn.cursor()
 
-    def clearTable(self, table):
+    def clearTable(self, table):  # 此处不能关闭数据库连接
         order = 'TRUNCATE %s' % table
         self.cur.execute(order)
         self.conn.commit()
-        self.closeMysql()
 
     def insertData(self, ipMes):  # 批量插数据
         order = 'INSERT INTO webIp (ip,port,type,area,timeout) VALUES (%s,%s,%s,%s,%s);'

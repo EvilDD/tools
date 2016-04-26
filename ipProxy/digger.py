@@ -6,7 +6,7 @@ import re
 from crawlerData import mySql
 
 
-def diggerIp():
+def diggerIp():  # 抓取www.site-digger.com网站的代理ip
     proxysIp = []  # 代理ip信息
     driver = webdriver.PhantomJS()
     driver.get('http://www.site-digger.com/html/articles/20110516/proxieslist.html')
