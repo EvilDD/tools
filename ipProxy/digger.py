@@ -44,9 +44,9 @@ def diggerIp():  # 抓取www.site-digger.com网站的代理ip
 
 def main():
     db = mySql()
-    db.clearTable('webIp')
     ipList = diggerIp()
-    db.insertData(ipList)
+    db.clearTable('webIp')  # 清除表
+    db.insertData(ipList)  # 批量插入
     print('site-digger.com采集代理并保存数据库结束!')
 
 if __name__ == '__main__':

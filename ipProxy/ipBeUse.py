@@ -3,15 +3,16 @@ from crawlerData import mySql
 import requests
 import queue
 import threading
-from time import time
+from time import time, sleep
 
-thread_num = 10
+thread_num = 3
 ipQueueLock = threading.Lock()
 ipQueue = queue.Queue()
 threads = []
 timeout = 5  # 设置延时
-validIp = []  # 过滤出的有效ip
+validIps = []  # 过滤出的有效ip
 exitFlag = 0
+a = []  # 超时和无效的ip
 
 
 class myThread (threading.Thread):
@@ -38,6 +39,7 @@ class myThread (threading.Thread):
                 ipQueueLock.release()
 
     def verifyIp(self, ip):  # 获取队列值并验证ip是否有效
+        ipTime = []  # 装ip和访问时间
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:45.0) Gecko/20100101 Firefox/45.0'
         }
@@ -48,44 +50,63 @@ class myThread (threading.Thread):
             start = time()
             r = requests.get('http://www.baidu.com', headers=headers, proxies=proxies, timeout=timeout)
             end = time()
-            print(end - start)
+            time_out = end - start
+            ipTime.append(ip)
+            ipTime.append(time_out)
             r.encoding = 'utf-8'
             if '京ICP证030173号' in r.text:
-                validIp.append(ip)
+                validIps.append(ipTime)
             else:
-                print('无效ip:%s' % ip)
+                a.append(ip)
+                # print('无效ip:%s' % ip)
+                pass
         except:
-            print('延时ip:%s' % ip)
+            a.append(ip)
+            # print('延时ip:%s' % ip)
+            pass
 
 
 def ipList():
     ips = []
     mysql = mySql()
     ipList1 = mysql.selectIpPort('webIp')
+    conectWebIp = True
+    while conectWebIp:
+        if ipList1 == []:
+            sleep(3)
+            mysql = mySql()
+            ipList1 = mysql.selectIpPort('webIp')  # 获取失败再获取一次
+        else:
+            conectWebIp = False
     ips = ipList1
-    if ips != []:
-        return ips
-    else:
-        print('获取数据ip失败!')
+    return ips
 
 
 def main():
     global exitFlag
-    ips = ipList()  # ip列表
-    ipQueueLock.acquire()  # 填充队列
-    for ip in ips:
-        ipQueue.put(ip)
-    ipQueueLock.release()
     for tName in range(thread_num):  # 创建新线程
         tName = "Thread-%d" % (tName + 1)
         thread = myThread(tName, ipQueue)
         thread.start()
         threads.append(thread)
+    ips = ipList()  # ip列表
+    ipQueueLock.acquire()  # 填充队列
+    for ip in ips:
+        ipQueue.put(ip)
+    ipQueueLock.release()
     # while not ipQueue.empty():  # 等待队列清空
     #     队列空了,dosomethin
     exitFlag = 1    # 通知线程是时候退出
     for t in threads:    # 等待所有线程完成
         t.join()
-    print("退出主线程", len(validIp))
+    mysql = mySql()
+    x = time()
+    mysql.clearTable('useIp')
+    mysql.insertUseIp(validIps)
+    y = time()
+    print(y - x)
+    print("退出主线程", len(validIps), len(a))
+
+
 if __name__ == '__main__':
     main()

@@ -1,4 +1,3 @@
-
 import pymysql
 
 
@@ -20,14 +19,20 @@ class mySql(object):
         self.cur.execute(order)
         self.conn.commit()
 
-    def insertData(self, ipMes):  # 批量插数据
+    def insertData(self, ipMes):  # 批量插数据抓回来的ip所有数据
         order = 'INSERT INTO webIp (ip,port,type,area,timeout) VALUES (%s,%s,%s,%s,%s);'
         self.cur.executemany(order, ipMes)
         self.conn.commit()
         self.closeMysql()
 
+    def insertUseIp(self, ipTime):  # 批量插入可用ip和超时时间
+        order = 'INSERT INTO useIp (ipport,timeout) VALUES (%s,%s);'
+        self.cur.executemany(order, ipTime)
+        self.conn.commit()
+        self.closeMysql()
+
     def selectIpPort(self, table):
-        order = 'SELECT * FROM %s LIMIT 10' % table
+        order = 'SELECT * FROM %s LIMIT 5' % table
         self.cur.execute(order)
         rows = self.cur.fetchall()
         self.closeMysql()
