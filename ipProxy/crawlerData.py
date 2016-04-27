@@ -26,13 +26,16 @@ class mySql(object):
         self.conn.commit()
         self.closeMysql()
 
-    def selectData(self):
-        order = 'SELECT * FROM webIp LIMIT 10'
+    def selectIpPort(self, table):
+        order = 'SELECT * FROM %s LIMIT 10' % table
         self.cur.execute(order)
-        ips = self.cur.fetchall()
-        for ip in ips:
-            print(ip)
+        rows = self.cur.fetchall()
         self.closeMysql()
+        ips = []
+        for row in rows:
+            ip = row[1] + ':' + row[2]
+            ips.append(ip)
+        return ips
 
     def closeMysql(self):
         self.cur.close()
@@ -41,4 +44,5 @@ class mySql(object):
 
 if __name__ == "__main__":
     mysql = mySql()
-    mysql.selectData()
+    ips = mysql.selectIpPort('webIp')
+    print(ips)

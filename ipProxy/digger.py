@@ -47,6 +47,7 @@ def main():
     db.clearTable('webIp')
     ipList = diggerIp()
     db.insertData(ipList)
+    print('site-digger.com采集代理并保存数据库结束!')
 
 if __name__ == '__main__':
     main()
