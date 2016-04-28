@@ -3,9 +3,9 @@ from crawlerData import mySql
 import requests
 import queue
 import threading
-from time import time, sleep
+from time import time, sleep, ctime
 
-thread_num = 3
+thread_num = 100
 ipQueueLock = threading.Lock()
 ipQueue = queue.Queue()
 threads = []
@@ -23,9 +23,9 @@ class myThread (threading.Thread):
         self.q = q
 
     def run(self):
-        print("开启线程：" + self.name)
+        # print("开启线程：" + self.name)
         self.getIp(self.name, self.q)
-        print("退出线程：" + self.name)
+        # print("退出线程：" + self.name)
 
     def getIp(self, threadName, q):
         while not exitFlag:
@@ -33,7 +33,7 @@ class myThread (threading.Thread):
             if not ipQueue.empty():
                 ip = q.get()
                 ipQueueLock.release()
-                print("%s processing %s" % (threadName, ip))
+                # print("%s processing %s" % (threadName, ip))
                 self.verifyIp(ip)  # 因为第一次queue是空的,所以获取不到ip,放到if中执行
             else:
                 ipQueueLock.release()
@@ -72,6 +72,7 @@ def ipList():
     ipList1 = mysql.selectIpPort('webIp')
     conectWebIp = True
     while conectWebIp:
+        print('获取webIp数据失败!%s' % (ctime()))
         if ipList1 == []:
             sleep(3)
             mysql = mySql()
@@ -94,18 +95,18 @@ def main():
     for ip in ips:
         ipQueue.put(ip)
     ipQueueLock.release()
-    # while not ipQueue.empty():  # 等待队列清空
-    #     队列空了,dosomethin
+    while not ipQueue.empty():  # 等待队列清空
+        pass
     exitFlag = 1    # 通知线程是时候退出
     for t in threads:    # 等待所有线程完成
         t.join()
     mysql = mySql()
+    print("退出主线程", len(validIps), len(a))
     x = time()
     mysql.clearTable('useIp')
     mysql.insertUseIp(validIps)
     y = time()
     print(y - x)
-    print("退出主线程", len(validIps), len(a))
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ class mySql(object):
             database='crawler',
             user='root',
             password='123abc',
-            host='45.78.62.18',  # localhost
+            host='localhost',  # localhost
             port=3306
         )
         self.cur = self.conn.cursor()
@@ -32,7 +32,7 @@ class mySql(object):
         self.closeMysql()
 
     def selectIpPort(self, table):
-        order = 'SELECT * FROM %s LIMIT 5' % table
+        order = 'SELECT * FROM %s' % table
         self.cur.execute(order)
         rows = self.cur.fetchall()
         self.closeMysql()

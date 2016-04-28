@@ -5,7 +5,7 @@ import queue
 import threading
 from time import time
 
-thread_num = 10
+thread_num = 3
 ipQueueLock = threading.Lock()
 ipQueue = queue.Queue()
 threads = []
@@ -80,8 +80,8 @@ def main():
     for ip in ips:
         ipQueue.put(ip)
     ipQueueLock.release()
-    # while not ipQueue.empty():  # 等待队列清空
-    #     队列空了,dosomethin
+    while not ipQueue.empty():  # 等待队列清空
+        pass
     exitFlag = 1    # 通知线程是时候退出
     for t in threads:    # 等待所有线程完成
         t.join()
