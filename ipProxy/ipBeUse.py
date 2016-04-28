@@ -12,7 +12,7 @@ threads = []
 timeout = 5  # 设置延时
 validIps = []  # 过滤出的有效ip
 exitFlag = 0
-a = []  # 超时和无效的ip
+noValidIps = []  # 超时和无效的ip
 
 
 class myThread (threading.Thread):
@@ -57,11 +57,11 @@ class myThread (threading.Thread):
             if '京ICP证030173号' in r.text:
                 validIps.append(ipTime)
             else:
-                a.append(ip)
+                noValidIps.append(ip)
                 # print('无效ip:%s' % ip)
                 pass
         except:
-            a.append(ip)
+            noValidIps.append(ip)
             # print('延时ip:%s' % ip)
             pass
 
@@ -72,8 +72,8 @@ def ipList():
     ipList1 = mysql.selectIpPort('webIp')
     conectWebIp = True
     while conectWebIp:
-        print('获取webIp数据失败!%s' % (ctime()))
         if ipList1 == []:
+            print('获取webIp数据失败!%s' % (ctime()))
             sleep(3)
             mysql = mySql()
             ipList1 = mysql.selectIpPort('webIp')  # 获取失败再获取一次
@@ -101,13 +101,9 @@ def main():
     for t in threads:    # 等待所有线程完成
         t.join()
     mysql = mySql()
-    print("退出主线程", len(validIps), len(a))
-    x = time()
+    print("退出主线程,此次可用ip%d,过滤ip%d" % (len(validIps), len(noValidIps)))
     mysql.clearTable('useIp')
     mysql.insertUseIp(validIps)
-    y = time()
-    print(y - x)
-
 
 if __name__ == '__main__':
     main()
