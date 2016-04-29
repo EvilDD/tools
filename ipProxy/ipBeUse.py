@@ -74,7 +74,7 @@ def ipList():
     while conectWebIp:
         if ipList1 == []:
             print('获取webIp数据失败!%s' % (ctime()))
-            sleep(3)
+            sleep(2)
             mysql = mySql()
             ipList1 = mysql.selectIpPort('webIp')  # 获取失败再获取一次
         else:

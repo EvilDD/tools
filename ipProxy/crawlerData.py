@@ -8,7 +8,7 @@ class mySql(object):
         self.conn = pymysql.connect(
             database='crawler',
             user='root',
-            password='123abc',
+            password='dong.56100',
             host='localhost',  # localhost
             port=3306
         )
