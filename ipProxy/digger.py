@@ -50,4 +50,7 @@ def main():
     print('site-digger.com采集代理并保存数据库结束!')
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print('此次采集失败!', e)

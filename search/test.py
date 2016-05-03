@@ -1,11 +1,6 @@
-# ipR = '(.*?):'  # 拆分出ip
-# protR = ':(\d+)'
-# import re
-# s = '192.168.1.1:80'
-# a = re.findall(ipR, s)
-# b = re.findall(protR, s)
-# print(a[0], '=====', b[0])
-values = []
-for i in range(20):
-    values.append((i, 'hi rollen' + str(i)))
-print(values)
+import requests
+proxies = {'http': 'http://64.37.115.5:8080'}
+r = requests.get('https://www.sogou.com/web?query=inurl:install/index.php&page=7', proxies=proxies)
+r.encoding = 'utf-8'
+with open('gggg.html', 'w', encoding='utf-8') as f:
+    f.write(r.text)
