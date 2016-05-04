@@ -97,16 +97,6 @@ class biyingSearch(baseSearch):
 class sosoSearch(baseSearch):
     """360搜索引擎"""
 
-    def getPageHtml(self, url, payload):  # 获取第n页的源码
-        headers = {
-            'User-Agent': choice(self.agent)
-        }
-        req = requests.get(url, params=payload, headers=headers, timeout=self.waitTime)
-        sleep(3)
-        # print(req.url, req.encoding)
-        req.encoding = 'utf-8'
-        return req.text
-
     def handleHtml(self, html):  # 处理html中的url
         soup = BeautifulSoup(html, 'lxml')
         links = soup.find_all('a')
