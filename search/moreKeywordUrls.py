@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import time
 
 proNum = 1  # 进度
-thread_num = 10  # 线程数
+thread_num = 300  # 线程数
 urlQL = threading.Lock()
 urlQ = queue.Queue()
 threads = []
@@ -40,9 +40,9 @@ class myThread(threading.Thread):
             urlQL.acquire()
             if not urlQ.empty():
                 url = self.q.get()  # 获取一个url
+                self.getPage(url)
                 urlQL.release()
                 # print("%s processing %s" % (self.name, url))
-                self.getPage(url)
             else:
                 urlQL.release()
 
@@ -54,10 +54,11 @@ class myThread(threading.Thread):
             rep.encoding = 'utf-8'
             # byHtmls.append(rep.text)
             byhandleHtml(rep.text)
-            print("正在处理第%d个页面" % proNum)
+            if proNum % 1000 == 0:
+                print("已完成%d个页面" % proNum)
             proNum += 1
         except:
-            print('由于网络原因第%d个页面%s处理失败' % (proNum, url))
+            # print('由于网络原因第%d个页面%s处理失败' % (proNum, url))
             proNum += 1
 
 
@@ -97,7 +98,6 @@ def byhandleHtml(html):  # 处理必应html中的url并保存
     urls = list(set(urls))  # 列表去重
     with open('moreKeyUrls.txt', 'a', encoding='utf-8') as f:
         f.writelines(urls)
-    delRepUrls('moreKeyUrls.txt')  # 文本再去重
 
 
 def delRepUrls(filePath):  # 去除重复和比兑不需要检测的url
@@ -123,6 +123,7 @@ def main():
     # print('获取html页面成功,准备提取正确url')
     # for html in byHtmls:
     #     byhandleHtml(html)
+    delRepUrls('moreKeyUrls.txt')  # 文本再去重
     print(time.ctime())
     print("耗时%f秒" % (time.time() - start))
     print('<======采集完毕======>')
