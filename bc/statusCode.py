@@ -38,7 +38,7 @@ def process_data(threadName, q):
             data = q.get()
             queueLock.release()
             try:
-                rep = requests.get(data, allow_redirects=False, timeout=10)
+                rep = requests.get(data, timeout=5)
                 code = rep.status_code
                 saveUrl(data, code)
                 if proNum % 100 == 0:
